@@ -18,6 +18,9 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   int hungerLevel = 50;
   late Timer _hungerTimer;
   late Timer _winlossTimer;
+  late Timer _activityTimer;
+  final List<String> selectActivities = ['Run', 'Sleep', 'Default'];
+  String selectedActivity = 'Default';
 
   late final TextEditingController _controller;
   @override
@@ -56,6 +59,10 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         );
         timer.cancel();
       }
+    });
+
+    _activityTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      _activityEffect();
     });
   }
     @override
@@ -147,6 +154,25 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     }
   }
 
+  void _activityEffect() {
+      if (selectedActivity == 'Run') { Timer(Duration(seconds: 1), () {
+        setState(() {
+        happinessLevel += 15;
+        hungerLevel += 10;
+      });
+      }); }
+      else if (selectedActivity == 'Sleep') { Timer(Duration(seconds: 1), () {
+        setState(() {
+        happinessLevel += 5;
+        hungerLevel -= 5;
+      }); 
+      }); }
+      else {
+        happinessLevel += 0;
+        hungerLevel += 0;
+      }
+    }
+
 
   Color _moodColor(double happinessLevel) {
   if (happinessLevel > 70) {
@@ -213,6 +239,13 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
               },
             ),
             const SizedBox(height: 20),
+            DropdownButton<String>(
+            value: selectedActivity,
+            items: selectActivities
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
+            onChanged: (value) => setState(() => selectedActivity = value ?? selectedActivity),
+          ),
             ElevatedButton(
               onPressed: _playWithPet,
               child: Text('Play with Your Pet'),
